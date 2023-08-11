@@ -37,6 +37,8 @@ public class PlayerController : MonoBehaviour, IHitable
         CollisionCheck();
         KeyboardHandler();
 
+        animator.SetBool("isJump", !_isGrounded);
+
         if (_isGrounded && Input.GetKeyDown(KeyCode.Space))
         {
             Jump();
