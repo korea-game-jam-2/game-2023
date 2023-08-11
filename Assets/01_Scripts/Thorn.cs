@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class Thorn : MonoBehaviour
 {
-    private void OnCollisionEnter2D(Collision2D collision)
+    public int damage = 1;
+
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.collider.tag == "Thorn")
+        IHitable hitable = collision.GetComponent<IHitable>();
+        if (hitable != null)
         {
-            Debug.Log("Contect Thorn");
+            hitable.Hit(damage);
         }
     }
 }
