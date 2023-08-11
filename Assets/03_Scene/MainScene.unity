@@ -2680,6 +2680,10 @@ PrefabInstance:
       propertyPath: m_ColliderPaths.Array.data[0].m_ColliderPaths.Array.data[0].Array.data[3].Y
       value: -50590304
       objectReference: {fileID: 0}
+    - target: {fileID: 2522133265584928821, guid: 091b86a4c9ccb2d46a7cd8eeaf78891f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.42214084
+      objectReference: {fileID: 0}
     - target: {fileID: 4799128649940386652, guid: 091b86a4c9ccb2d46a7cd8eeaf78891f, type: 3}
       propertyPath: m_Follow
       value: 
@@ -3217,9 +3221,10 @@ GameObject:
   - component: {fileID: 2000880283}
   - component: {fileID: 2000880282}
   - component: {fileID: 2000880281}
+  - component: {fileID: 2000880286}
   m_Layer: 6
   m_Name: TileMap_Thorn
-  m_TagString: Thorn
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3268,7 +3273,7 @@ CompositeCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -3644,6 +3649,19 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &2000880286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2000880279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5415f8faf94bed848a1509000e66f09a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 1
 --- !u!4 &2024034038 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2130638011677269618, guid: b6087c65504535c4c9143003cce6bba0, type: 3}
