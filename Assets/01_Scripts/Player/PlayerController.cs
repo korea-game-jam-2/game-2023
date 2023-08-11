@@ -6,17 +6,23 @@ using Unity.VisualScripting.Antlr3.Runtime.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IHitable
 {
-    public float moveSpeed = 5f;
-    public float jumpForce = 10f;
-    public Transform groundCheck;
+    public int hp = 3;
+    public float moveSpeed = 2f;
+    public float jumpForce = 5f;
+    public Transform groundCheck = null;
     public LayerMask groundLayer;
+
+    public SpriteRenderer spriteRenderer = null;
 
     private Rigidbody2D _rigidbody2D;
     private bool _isGrounded;
     private bool _isDoubleJumped;
     private float _groundCheckRadius = 0.05f;
+    private bool _isLeftView = false;
+    private bool _isDie = false;
+
 
     private void Awake()
     {
@@ -25,6 +31,8 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (_isDie) return;
+
         CollisionCheck();
         KeyboardHandler();
 
@@ -32,18 +40,17 @@ public class PlayerController : MonoBehaviour
         {
             Jump();
         }
+        bool rightHit = Physics2D.Linecast(transform.position, transform.position + transform.right * 0.1f, groundLayer);
 
-         if (!_isGrounded)
+        bool leftHit = Physics2D.Linecast(transform.position, transform.position + transform.right * -0.1f, groundLayer);
+
+        if (!_isGrounded)
         {
             if (!_isDoubleJumped && Input.GetKeyDown(KeyCode.Space))
             {
                 _isDoubleJumped = true;
                 Jump();
             }
-
-            bool rightHit = Physics2D.Linecast(transform.position, transform.position + transform.right * 0.1f, groundLayer);
-
-            bool leftHit = Physics2D.Linecast(transform.position, transform.position + transform.right * -0.1f, groundLayer);
 
             if (rightHit)
             {
@@ -64,7 +71,16 @@ public class PlayerController : MonoBehaviour
     private void KeyboardHandler()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
-        _rigidbody2D.velocity = new Vector2(horizontalInput * moveSpeed, _rigidbody2D.velocity.y);
+        if (horizontalInput != 0)
+        {
+            bool newDirection = Mathf.Sign(horizontalInput) < 0 ? true : false;
+            if(_isLeftView  != newDirection)
+            {
+                _isLeftView = newDirection;
+                spriteRenderer.flipX = _isLeftView;
+            }
+            _rigidbody2D.velocity = new Vector2(horizontalInput * moveSpeed, _rigidbody2D.velocity.y);
+        }
     }
 
     private void CollisionCheck()
@@ -77,5 +93,18 @@ public class PlayerController : MonoBehaviour
         else {
             _isGrounded = false;
         }
+    }
+
+    public void Hit(int damage)
+    {
+        hp -= damage;
+
+        if (hp <= 0) {
+            Die();
+        }
+    }
+    public void Die() {
+        transform.Rotate(Vector3.forward * 20f * Time.deltaTime);
+        _isDie = true;
     }
 }
