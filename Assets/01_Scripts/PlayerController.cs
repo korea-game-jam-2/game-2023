@@ -1,14 +1,22 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
+using Unity.VisualScripting.Antlr3.Runtime.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 3f;
+    public float moveSpeed = 5f;
     public float jumpForce = 10f;
+    public Transform groundCheck;
+    public LayerMask groundLayer;
 
     private Rigidbody2D _rigidbody2D;
+    private bool _isGrounded;
+    private bool _isDoubleJumped;
+    private float _groundCheckRadius = 0.05f;
 
     private void Awake()
     {
@@ -17,14 +25,57 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        float x = Input.GetAxis("Horizontal");
-        if (x != 0) {
-            transform.Translate(x * speed * Time.deltaTime, 0, 0);
+        CollisionCheck();
+        KeyboardHandler();
+
+        if (_isGrounded && Input.GetKeyDown(KeyCode.Space))
+        {
+            Jump();
         }
 
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            Debug.Log("isSpace");
-            _rigidbody2D.AddForce(Vector2.up * jumpForce);
+         if (!_isGrounded)
+        {
+            if (!_isDoubleJumped && Input.GetKeyDown(KeyCode.Space))
+            {
+                _isDoubleJumped = true;
+                Jump();
+            }
+
+            bool rightHit = Physics2D.Linecast(transform.position, transform.position + transform.right * 0.1f, groundLayer);
+
+            bool leftHit = Physics2D.Linecast(transform.position, transform.position + transform.right * -0.1f, groundLayer);
+
+            if (rightHit)
+            {
+                _rigidbody2D.velocity = new Vector2(Mathf.Min(_rigidbody2D.velocity.x, 0), _rigidbody2D.velocity.y);
+            }
+            else if (leftHit)
+            {
+                _rigidbody2D.velocity = new Vector2(Mathf.Max(_rigidbody2D.velocity.x, 0), _rigidbody2D.velocity.y);
+            }
+        }
+    }
+
+    private void Jump()
+    {
+        _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, jumpForce);
+    }
+
+    private void KeyboardHandler()
+    {
+        float horizontalInput = Input.GetAxis("Horizontal");
+        _rigidbody2D.velocity = new Vector2(horizontalInput * moveSpeed, _rigidbody2D.velocity.y);
+    }
+
+    private void CollisionCheck()
+    {
+        if (Physics2D.OverlapCircle(groundCheck.position, _groundCheckRadius, groundLayer))
+        {
+            _isGrounded = true;
+            _isDoubleJumped = false;
+        }
+        else {
+            _isGrounded = false;
         }
     }
 }
