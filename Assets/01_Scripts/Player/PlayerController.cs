@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour, IHitable
     public bool[] isPuzzle = new bool[3];
 
     public SpriteRenderer spriteRenderer = null;
+    public Animator animator = null;
 
     private Rigidbody2D _rigidbody2D;
     private bool _isGrounded;
@@ -71,6 +72,7 @@ public class PlayerController : MonoBehaviour, IHitable
     private void KeyboardHandler()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
+        animator.SetBool("isMove", horizontalInput != 0f);
         if (horizontalInput != 0)
         {
             bool newDirection = Mathf.Sign(horizontalInput) < 0 ? true : false;
@@ -109,6 +111,7 @@ public class PlayerController : MonoBehaviour, IHitable
     public void Die() {
         transform.Rotate(Vector3.forward * 20f * Time.deltaTime);
         _isDie = true;
+        animator.SetTrigger("isDie");
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
