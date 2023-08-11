@@ -75,12 +75,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27b7329eac82bdc4eba27082e9cc43a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hp: 3
   moveSpeed: 2
   jumpForce: 5
   groundCheck: {fileID: 1145994217229438554}
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
+  spriteRenderer: {fileID: 843693788371064957}
 --- !u!70 &209774652761057695
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

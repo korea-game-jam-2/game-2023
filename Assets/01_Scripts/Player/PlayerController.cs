@@ -31,8 +31,6 @@ public class PlayerController : MonoBehaviour, IHitable
 
     void Update()
     {
-        if (_isDie) return;
-
         CollisionCheck();
         KeyboardHandler();
 
@@ -97,7 +95,10 @@ public class PlayerController : MonoBehaviour, IHitable
 
     public void Hit(int damage)
     {
+        Debug.Log(hp);
         hp -= damage;
+
+        _rigidbody2D.AddForce(_isLeftView ? new Vector2(1f,1f) * 500f: new Vector2(1f, 1f) * -500f);
 
         if (hp <= 0) {
             Die();
