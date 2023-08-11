@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
         }
 
         if (Input.GetKeyDown(KeyCode.Space)) {
+            Debug.Log("isSpace");
             _rigidbody2D.AddForce(Vector2.up * jumpForce);
         }
     }
