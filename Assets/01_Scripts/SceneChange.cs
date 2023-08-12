@@ -3,23 +3,38 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class SceneChange : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    public VideoPlayer player;
+    public bool videoSkip;
     public void ChangeScene()
     {
-        SceneManager.LoadScene(1);
+        if (videoSkip)
+        {
+            SceneManager.LoadScene(1);
+        }
+        else
+        {
+            player.gameObject.SetActive(true);
+            player.Play();
+            player.loopPointReached += (source) =>
+            {
+                SceneManager.LoadScene(1);
+            };
+        }
+    }
+    private void Start()
+    {
+        player.Prepare();
+    }
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            player.Stop();
+            SceneManager.LoadScene(1);
+        }
     }
 }
