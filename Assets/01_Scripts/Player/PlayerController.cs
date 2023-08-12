@@ -1,5 +1,6 @@
 using PlayerState;
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour, IHitable
@@ -11,8 +12,6 @@ public class PlayerController : MonoBehaviour, IHitable
 
     public Transform groundCheck = null;
     public LayerMask groundLayer;
-
-    public bool[] isPuzzle = new bool[3];
 
     public SpriteRenderer spriteRenderer = null;
     public Animator animator = null;
@@ -26,6 +25,8 @@ public class PlayerController : MonoBehaviour, IHitable
     {
         _machine = new StateMachine<PlayerController>(new MovableState(), this);
         _machine.AddState(new DieState(), this);
+
+        
     }
 
     void Update()
@@ -41,10 +42,10 @@ public class PlayerController : MonoBehaviour, IHitable
             _machine.ChangeState<DieState>();
         }
     }
-    
+
 }
 
-namespace PlayerState{
+namespace PlayerState {
     public class MovableState : IState<PlayerController>
     {
         private PlayerController _player;
@@ -81,7 +82,7 @@ namespace PlayerState{
             }
         }
 
-        private  void ObstacleCheck()
+        private void ObstacleCheck()
         {
             Vector3 origin = _player.transform.position;
             Vector3 rayDistance = _player.transform.right * 0.1f;
@@ -94,7 +95,7 @@ namespace PlayerState{
                 {
                     _player.rb2D.velocity = new Vector2(Mathf.Min(_player.rb2D.velocity.x, 0), _player.rb2D.velocity.y);
 
-                    Debug.DrawLine(origin, origin + rayDistance,  Color.green);
+                    Debug.DrawLine(origin, origin + rayDistance, Color.green);
                 }
                 else if (leftHit)
                 {
@@ -141,7 +142,8 @@ namespace PlayerState{
         }
         private void CheckGround()
         {
-            if (_player.rb2D.velocity.y > 1f) {
+            if (_player.rb2D.velocity.y > 1f)
+            {
                 _isGrounded = false;
                 return;
             }
@@ -157,10 +159,10 @@ namespace PlayerState{
                 _isGrounded = false;
             }
 
-            
         }
+        
     }
-    
+}
     public class DieState : IState<PlayerController>
     {
         private PlayerController _player;
@@ -183,11 +185,3 @@ namespace PlayerState{
             _player = context;
         }
     }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.tag == "Eye") { isPuzzle[0] = true; Destroy(collision); }
-        else if (collision.tag == "beak") isPuzzle[1] = true;
-        else if (collision.tag == "comb") isPuzzle[2] = true;
-    }
-}
