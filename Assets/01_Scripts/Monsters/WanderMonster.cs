@@ -1,22 +1,8 @@
-<<<<<<< HEAD
-=======
 using PlayerState;
->>>>>>> cf0468e9f540463fb717e5243567ebc8e09b475a
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-<<<<<<< HEAD
-public class WanderMonster : MonoBehaviour
-{
-    public float moveSpeed = 1f;
-
-    private void Update()
-    {
-        Vector3 origin = transform.position;
-        Vector3 rayDistance = transform.right * 0.1f;
-
-=======
 public class WanderMonster : MonoBehaviour, IHitable
 {
     public Rigidbody2D rb2D;
@@ -65,6 +51,5 @@ public class WanderMonster : MonoBehaviour, IHitable
         rb2D.velocity = Vector3.zero;
         animator.SetTrigger("isDie");
         Destroy(gameObject, 1f);
->>>>>>> cf0468e9f540463fb717e5243567ebc8e09b475a
     }
 }
