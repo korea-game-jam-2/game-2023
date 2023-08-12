@@ -43015,11 +43015,11 @@ PrefabInstance:
       objectReference: {fileID: 2024034038}
     - target: {fileID: 5727402541609983973, guid: 091b86a4c9ccb2d46a7cd8eeaf78891f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.022413
+      value: 18.57
       objectReference: {fileID: 0}
     - target: {fileID: 5727402541609983973, guid: 091b86a4c9ccb2d46a7cd8eeaf78891f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.1429994
+      value: -0.16
       objectReference: {fileID: 0}
     - target: {fileID: 6683708383659032608, guid: 091b86a4c9ccb2d46a7cd8eeaf78891f, type: 3}
       propertyPath: m_BackGroundColor.b
