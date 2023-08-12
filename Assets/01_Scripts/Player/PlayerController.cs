@@ -1,114 +1,187 @@
+using PlayerState;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Net;
-using Unity.VisualScripting.Antlr3.Runtime.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
 public class PlayerController : MonoBehaviour, IHitable
 {
     public int hp = 3;
     public float moveSpeed = 2f;
     public float jumpForce = 5f;
+    public float invincibleTime = 1f;
+
     public Transform groundCheck = null;
     public LayerMask groundLayer;
 
     public bool[] isPuzzle = new bool[3];
 
     public SpriteRenderer spriteRenderer = null;
-
-    private Rigidbody2D _rigidbody2D;
-    private bool _isGrounded;
-    private bool _isDoubleJumped;
-    private float _groundCheckRadius = 0.05f;
-    private bool _isLeftView = false;
+    public Animator animator = null;
+    public Rigidbody2D rb2D = null;
+   
     private bool _isDie = false;
 
+    private StateMachine<PlayerController> _machine;
 
     private void Awake()
     {
-        _rigidbody2D = GetComponent<Rigidbody2D>();
+        _machine = new StateMachine<PlayerController>(new MovableState(), this);
+        _machine.AddState(new DieState(), this);
     }
 
     void Update()
     {
-        CollisionCheck();
-        KeyboardHandler();
+        _machine.Execute();
+    }
+    public void Hit(int damage)
+    {
+        hp -= damage;
 
-        if (_isGrounded && Input.GetKeyDown(KeyCode.Space))
-        {
-            Jump();
+
+        if (hp <= 0) {
+            _machine.ChangeState<DieState>();
         }
-        bool rightHit = Physics2D.Linecast(transform.position, transform.position + transform.right * 0.1f, groundLayer);
+    }
+    
+}
 
-        bool leftHit = Physics2D.Linecast(transform.position, transform.position + transform.right * -0.1f, groundLayer);
+namespace PlayerState{
+    public class MovableState : IState<PlayerController>
+    {
+        private PlayerController _player;
+        private bool _isGrounded;
+        private bool _isDoubleJumped;
+        private float _groundCheckRadius = 0.05f;
+        private bool _isLeftView = false;
 
-        if (!_isGrounded)
+
+        public void Enter()
         {
-            if (!_isDoubleJumped && Input.GetKeyDown(KeyCode.Space))
+            throw new NotImplementedException();
+        }
+
+        public void Execute()
+        {
+            CheckGround();
+            KeyboardHandler();
+
+            if (_isGrounded && Input.GetKeyDown(KeyCode.Space))
             {
-                _isDoubleJumped = true;
                 Jump();
             }
 
-            if (rightHit)
+            ObstacleCheck();
+
+            if (!_isGrounded)
             {
-                _rigidbody2D.velocity = new Vector2(Mathf.Min(_rigidbody2D.velocity.x, 0), _rigidbody2D.velocity.y);
-            }
-            else if (leftHit)
-            {
-                _rigidbody2D.velocity = new Vector2(Mathf.Max(_rigidbody2D.velocity.x, 0), _rigidbody2D.velocity.y);
+                if (!_isDoubleJumped && Input.GetKeyDown(KeyCode.Space))
+                {
+                    _isDoubleJumped = true;
+                    Jump();
+                }
             }
         }
-    }
 
-    private void Jump()
-    {
-        _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, jumpForce);
-    }
+        private  void ObstacleCheck()
+        {
+            Vector3 origin = _player.transform.position;
+            Vector3 rayDistance = _player.transform.right * 0.1f;
+            bool rightHit = Physics2D.Linecast(origin, origin + rayDistance, _player.groundLayer);
+            bool leftHit = Physics2D.Linecast(origin, origin - rayDistance, _player.groundLayer);
 
-    private void KeyboardHandler()
-    {
-        float horizontalInput = Input.GetAxis("Horizontal");
-        if (horizontalInput != 0)
+            if (!_isGrounded)
+            {
+                if (rightHit)
+                {
+                    _player.rb2D.velocity = new Vector2(Mathf.Min(_player.rb2D.velocity.x, 0), _player.rb2D.velocity.y);
+
+                    Debug.DrawLine(origin, origin + rayDistance,  Color.green);
+                }
+                else if (leftHit)
+                {
+                    _player.rb2D.velocity = new Vector2(Mathf.Max(_player.rb2D.velocity.x, 0), _player.rb2D.velocity.y);
+
+                    Debug.DrawLine(origin, origin - rayDistance, Color.green);
+                }
+            }
+        }
+
+        public void Exit()
+        {
+        }
+
+        public void Initialize(PlayerController context)
+        {
+            _player = context;
+        }
+        private void KeyboardHandler()
+        {
+            float horizontalInput = Input.GetAxis("Horizontal");
+            _player.animator.SetBool("isMove", horizontalInput != 0f);
+            if (horizontalInput != 0)
+            {
+                CheckViewSide(horizontalInput);
+
+                _player.rb2D.velocity = new Vector2(horizontalInput * _player.moveSpeed, _player.rb2D.velocity.y);
+            }
+        }
+
+        private void CheckViewSide(float horizontalInput)
         {
             bool newDirection = Mathf.Sign(horizontalInput) < 0 ? true : false;
-            if(_isLeftView  != newDirection)
+            if (_isLeftView != newDirection)
             {
                 _isLeftView = newDirection;
-                spriteRenderer.flipX = _isLeftView;
+                _player.spriteRenderer.flipX = _isLeftView;
             }
-            _rigidbody2D.velocity = new Vector2(horizontalInput * moveSpeed, _rigidbody2D.velocity.y);
         }
-    }
-
-    private void CollisionCheck()
-    {
-        if (Physics2D.OverlapCircle(groundCheck.position, _groundCheckRadius, groundLayer))
+        private void Jump()
         {
-            _isGrounded = true;
-            _isDoubleJumped = false;
+            _player.rb2D.velocity = new Vector2(_player.rb2D.velocity.x, _player.jumpForce);
+            _player.animator.SetBool("isJump", true);
         }
-        else {
-            _isGrounded = false;
+        private void CheckGround()
+        {
+            if (_player.rb2D.velocity.y > 1f) {
+                _isGrounded = false;
+                return;
+            }
+
+            if (Physics2D.OverlapCircle(_player.groundCheck.position, _groundCheckRadius, _player.groundLayer))
+            {
+                _isGrounded = true;
+                _isDoubleJumped = false;
+                _player.animator.SetBool("isJump", false);
+            }
+            else
+            {
+                _isGrounded = false;
+            }
+
+            
         }
     }
-
-    public void Hit(int damage)
+    
+    public class DieState : IState<PlayerController>
     {
-        Debug.Log(hp);
-        hp -= damage;
+        private PlayerController _player;
 
-        _rigidbody2D.AddForce(_isLeftView ? new Vector2(1f,1f) * 500f: new Vector2(1f, 1f) * -500f);
-
-        if (hp <= 0) {
-            Die();
+        public void Enter()
+        {
+            _player.animator.SetTrigger("isDie");
         }
-    }
-    public void Die() {
-        transform.Rotate(Vector3.forward * 20f * Time.deltaTime);
-        _isDie = true;
+
+        public void Execute()
+        {
+        }
+
+        public void Exit()
+        {
+        }
+
+        public void Initialize(PlayerController context)
+        {
+            _player = context;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

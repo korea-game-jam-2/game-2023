@@ -27,6 +27,9 @@ public class StateMachine<T> where T : class
         _currentState = state;
         _currentState.Enter();
     }
+    public void Execute() {
+        _currentState.Execute();
+    }
 }
 
 public interface IState<T> where T : class
