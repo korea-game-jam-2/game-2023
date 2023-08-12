@@ -197,4 +197,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef0ecec5ccc877447999a37712ccf1a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  anim: {fileID: 2983805454560264803}
   isMirror: 0
