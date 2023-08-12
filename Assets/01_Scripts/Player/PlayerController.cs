@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using TMPro.EditorUtilities;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerController : MonoBehaviour, IHitable
 {
@@ -24,21 +25,24 @@ public class PlayerController : MonoBehaviour, IHitable
 
 
     private bool isPause = false;
+    private bool _invincible = false;
 
-    private StateMachine<PlayerController> _machine;
+    public StateMachine<PlayerController> machine;
     private UiManager uiManager = null;
 
     private void Awake()
     {
-        _machine = new StateMachine<PlayerController>(new MovableState(), this);
-        _machine.AddState(new DieState(), this);
+        machine = new StateMachine<PlayerController>(new MovableState(), this);
+        machine.AddState(new DieState(), this);
+        machine.AddState(new FreezedState(), this);
+        machine.AddState(new HitState(), this);
 
         uiManager = FindObjectOfType<UiManager>();
     }
 
     void Update()
     {
-        _machine.Execute();
+        machine.Execute();
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -53,7 +57,17 @@ public class PlayerController : MonoBehaviour, IHitable
             }
         }
     }
-
+    public void SetFreeze(bool freeze)
+    {
+        if (freeze)
+        {
+            machine.ChangeState<FreezedState>();
+        }
+        else
+        {
+            machine.ChangeState<MovableState>();
+        }
+    }
     public void Resume()
     {
         pauseMenu.SetActive(false);
@@ -69,22 +83,36 @@ public class PlayerController : MonoBehaviour, IHitable
     }
     public void Hit(int damage)
     {
+        if (_invincible && damage < 1000) return;
+
         hp -= damage;
         if (hp >= 0)
         {
             Instantiate(hitEffect, transform.position, Quaternion.identity);
             uiManager.HealthDown(hp);
+            machine.ChangeState<HitState>();
         }
 
         if (hp <= 0)
         {
-            _machine.ChangeState<DieState>();
+            machine.ChangeState<DieState>();
         }
+
+        _invincible = true;
+        spriteRenderer.color = spriteRenderer.color * new Color(1f, 1f, 1f, 0.3f);
+        Invoke(nameof(ResetInvincible), 2f);
+    }
+    private void ResetInvincible()
+    {
+        Color color = spriteRenderer.color;
+        color.a = 1f;
+        spriteRenderer.color = color;
+        _invincible = false;
     }
     public void ResetState()
     {
         hp = 3;
-        _machine.ChangeState<MovableState>();
+        machine.ChangeState<MovableState>();
     }
 
 }
@@ -130,14 +158,16 @@ namespace PlayerState
         {
             Vector3 origin = _player.transform.position;
             Vector3 rayDistance = _player.transform.right * 0.1f;
-            Vector3 headPosition = new Vector2(0, 0.5f);
+            Vector3 headPosition = new Vector2(0, 0.4f);
             bool rightHit = Physics2D.Linecast(origin, origin + rayDistance, _player.groundLayer);
-            if(!rightHit) {
-                
+            if (!rightHit)
+            {
+
                 rightHit = Physics2D.Linecast(origin, origin + rayDistance + headPosition, _player.groundLayer);
             }
             bool leftHit = Physics2D.Linecast(origin, origin - rayDistance, _player.groundLayer);
-            if (!leftHit) {
+            if (!leftHit)
+            {
                 leftHit = Physics2D.Linecast(origin, origin - rayDistance + headPosition, _player.groundLayer);
             }
             if (!_isGrounded)
@@ -213,33 +243,95 @@ namespace PlayerState
         }
 
     }
-}
-public class DieState : IState<PlayerController>
-{
-    private PlayerController _player;
-
-    private float _respawnCoolTime = 3f;
-    public void Enter()
+    public class DieState : IState<PlayerController>
     {
-        _player.animator.SetBool("isDie", true);
-        _respawnCoolTime = 3f;
-    }
+        private PlayerController _player;
 
-    public void Execute()
-    {
-        _respawnCoolTime -= Time.deltaTime;
-        if (_respawnCoolTime < 0) {
-            GameManager.Instance.Respawn();
+        private float _respawnCoolTime = 3f;
+        public void Enter()
+        {
+            _player.animator.SetBool("isDie", true);
+            _respawnCoolTime = 3f;
+        }
+
+        public void Execute()
+        {
+            _respawnCoolTime -= Time.deltaTime;
+            if (_respawnCoolTime < 0)
+            {
+                GameManager.Instance.Respawn();
+            }
+        }
+
+        public void Exit()
+        {
+            _player.animator.SetBool("isDie", false);
+        }
+
+        public void Initialize(PlayerController context)
+        {
+            _player = context;
         }
     }
 
-    public void Exit()
+    public class FreezedState : IState<PlayerController>
     {
-        _player.animator.SetBool("isDie", false);
-    }
+        public void Enter()
+        {
+        }
 
-    public void Initialize(PlayerController context)
+        public void Execute()
+        {
+        }
+
+        public void Exit()
+        {
+        }
+
+        public void Initialize(PlayerController context)
+        {
+        }
+    }
+    public class HitState : IState<PlayerController>
     {
-        _player = context;
+        private float _stunTime = 0.5f;
+        private PlayerController _player;
+        private float _flickerTime = 0.1f;
+        private bool _isRed = false;
+        public void Enter()
+        {
+            _stunTime = 0.5f;
+            _flickerTime = 0.1f;
+            // ³Ë¹é
+            //float sign = _player.rb2D.velocity.x > 0 ? -1 : 1;
+            //_player.rb2D.AddForce(new Vector2( 150f * sign, 100f));
+        }
+
+        public void Execute()
+        {
+            _stunTime -= Time.deltaTime;
+            _flickerTime -= Time.deltaTime;
+            if (_flickerTime < 0f)
+            {
+                _flickerTime = 0.1f;
+                float alpha = _player.spriteRenderer.color.a;
+                _player.spriteRenderer.color = _isRed ?  new Color (1,0,0, alpha) : new Color(1,1,1,alpha);
+                _isRed = !_isRed;
+            }
+            if (_stunTime < 0f)
+            {
+                _player.machine.Redo();
+            }
+        }
+
+        public void Exit()
+        {
+            _player.spriteRenderer.color = new Color(1,1,1, _player.spriteRenderer.color.a);
+        }
+
+        public void Initialize(PlayerController context)
+        {
+            _player = context;
+        }
     }
 }
