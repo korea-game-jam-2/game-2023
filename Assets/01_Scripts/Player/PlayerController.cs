@@ -1,5 +1,6 @@
 using PlayerState;
 using System;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -16,15 +17,23 @@ public class PlayerController : MonoBehaviour, IHitable
     public SpriteRenderer spriteRenderer = null;
     public Animator animator = null;
     public Rigidbody2D rb2D = null;
-   
+    
+    public GameObject pauseMenu;
+    public GameObject hitEffect;
+
+
     private bool _isDie = false;
+    private bool isPause = false;
 
     private StateMachine<PlayerController> _machine;
+    private UiManager uiManager = null;
 
     private void Awake()
     {
         _machine = new StateMachine<PlayerController>(new MovableState(), this);
         _machine.AddState(new DieState(), this);
+
+        uiManager = FindObjectOfType<UiManager>();
 
         
     }
@@ -32,17 +41,49 @@ public class PlayerController : MonoBehaviour, IHitable
     void Update()
     {
         _machine.Execute();
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (isPause)
+            {
+                Pause();
+                
+            }
+            else
+            {
+                Resume();
+            }
+        }
     }
-    public void Hit(int damage)
+
+    public void Resume()
+    {
+        pauseMenu.SetActive(false);
+        Time.timeScale = 1f;
+        isPause = true;
+    }
+
+    public void Pause()
+    {
+        pauseMenu.SetActive(true);
+        Time.timeScale = 0f;
+        isPause = false;
+    }
+        public void Hit(int damage)
     {
         hp -= damage;
-
+        if (hp >= 0)
+        {
+            Instantiate(hitEffect,transform.position, Quaternion.identity);
+            uiManager.HealthDown(hp);
+        }
 
         if (hp <= 0) {
             _machine.ChangeState<DieState>();
         }
     }
 
+    
 }
 
 namespace PlayerState {
