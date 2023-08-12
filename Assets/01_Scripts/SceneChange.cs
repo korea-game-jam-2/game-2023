@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,8 +8,13 @@ using UnityEngine.Video;
 
 public class SceneChange : MonoBehaviour
 {
+    public AudioSource audioSource;
     public VideoPlayer player;
     public bool videoSkip;
+    private void Start()
+    {
+        player.Prepare();
+    }
     public void ChangeScene()
     {
         if (videoSkip)
@@ -17,6 +23,7 @@ public class SceneChange : MonoBehaviour
         }
         else
         {
+            audioSource.Stop();
             player.gameObject.SetActive(true);
             player.Play();
             player.loopPointReached += (source) =>
@@ -25,10 +32,7 @@ public class SceneChange : MonoBehaviour
             };
         }
     }
-    private void Start()
-    {
-        player.Prepare();
-    }
+    
     private void Update()
     {
         if(Input.GetKeyDown(KeyCode.Escape))
