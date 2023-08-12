@@ -29,7 +29,8 @@ public class PlayerController : MonoBehaviour, IHitable
 
     public StateMachine<PlayerController> machine;
     private UiManager uiManager = null;
-
+    
+    public AudioSource audioSource;
     private void Awake()
     {
         machine = new StateMachine<PlayerController>(new MovableState(), this);
@@ -38,6 +39,7 @@ public class PlayerController : MonoBehaviour, IHitable
         machine.AddState(new HitState(), this);
 
         uiManager = FindObjectOfType<UiManager>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -127,7 +129,7 @@ namespace PlayerState
         private float _groundCheckRadius = 0.05f;
         private bool _isLeftView = false;
 
-
+        
         public void Enter()
         {
         }
@@ -140,6 +142,7 @@ namespace PlayerState
             if (_isGrounded && Input.GetKeyDown(KeyCode.Space))
             {
                 Jump();
+                
             }
 
             ObstacleCheck();
@@ -220,6 +223,7 @@ namespace PlayerState
         {
             _player.rb2D.velocity = new Vector2(_player.rb2D.velocity.x, _player.jumpForce);
             _player.animator.SetBool("isJump", true);
+            _player.audioSource.Play();
         }
         private void CheckGround()
         {
