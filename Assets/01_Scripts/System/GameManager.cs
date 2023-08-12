@@ -64,4 +64,8 @@ public class GameManager : MonoBehaviour
             playerController.animator.runtimeAnimatorController = playerAnimCtrl[index];
         }
     }
+    public void GameStop()
+    {
+        Application.Quit();
+    }
 }
