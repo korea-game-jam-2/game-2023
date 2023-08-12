@@ -8,6 +8,7 @@ public class Puzzle : MonoBehaviour
 
     public GameObject[] onPuzzle;
     public GameObject exlplonsion;
+    public GameObject pieceUi;
     // Update is called once per frame
     void Update()
     {
@@ -22,7 +23,9 @@ public class Puzzle : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        
         if (collision.tag == "Player") {
+            pieceUi.SetActive(true);
             Instantiate(exlplonsion, transform.position, Quaternion.identity);
             if (gameObject.tag == "Eye")
             {

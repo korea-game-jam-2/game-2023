@@ -112,6 +112,19 @@ public class PlayerController : MonoBehaviour, IHitable
         machine.ChangeState<MovableState>();
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag == "Gourd")
+        {
+            Destroy(collision.gameObject);
+            if (hp < 3)
+            {
+                uiManager.HealthDown(hp);
+                hp++;
+            }
+        }
+    }
+
 }
 
 namespace PlayerState
