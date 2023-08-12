@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -12,6 +13,8 @@ public class GameManager : MonoBehaviour
     public PlayerController playerController;
     public List<PlayableDirector> stageTransition;
     public bool skipCinematic = false;
+
+    public List<RuntimeAnimatorController> playerAnimCtrl;
 
     private SavePoint _currentSavePoint;
 
@@ -55,5 +58,10 @@ public class GameManager : MonoBehaviour
 
         stageTransition[index].stopped += (_)=>playerController.SetFreeze(false);
         stageTransition[index].Play();
+
+        if(playerAnimCtrl.Count> index)
+        {
+            playerController.animator.runtimeAnimatorController = playerAnimCtrl[index];
+        }
     }
 }
