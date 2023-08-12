@@ -90,7 +90,7 @@ public class PlayerController : MonoBehaviour, IHitable
             machine.ChangeState<HitState>();
         }
 
-        if (hp <= 0)
+        if (hp <= 0 && !(machine.CurrentState is DieState))
         {
             machine.ChangeState<DieState>();
         }
@@ -119,7 +119,7 @@ public class PlayerController : MonoBehaviour, IHitable
             Destroy(collision.gameObject);
             if (hp < 3)
             {
-                uiManager.HealthDown(hp);
+                uiManager.HealthUp(hp);
                 hp++;
             }
         }
