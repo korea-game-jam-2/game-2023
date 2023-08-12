@@ -63,6 +63,7 @@ MonoBehaviour:
   rb2D: {fileID: 51926265338582755}
   pauseMenu: {fileID: 0}
   hitEffect: {fileID: 4021103657954561961, guid: 5c755f9bc5253ea418e919994537dcc7, type: 3}
+  audioSource: {fileID: 0}
 --- !u!50 &51926265338582755
 Rigidbody2D:
   serializedVersion: 4
