@@ -82,8 +82,23 @@ public class PlayerController : MonoBehaviour, IHitable
             _machine.ChangeState<DieState>();
         }
     }
-
     
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        Debug.Log("IN");
+        if (other.tag == "Gourd")
+        {
+            Debug.Log("IN");
+            Destroy(other.gameObject);
+            if (hp < 3)
+            {
+                uiManager.HealthUp(hp);
+                hp++;
+            }
+        }
+    }
+
+
 }
 
 namespace PlayerState {
