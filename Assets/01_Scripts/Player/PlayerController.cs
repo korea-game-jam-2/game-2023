@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour, IHitable
     public Transform groundCheck = null;
     public LayerMask groundLayer;
 
+    public bool[] isPuzzle = new bool[3];
+
     public SpriteRenderer spriteRenderer = null;
 
     private Rigidbody2D _rigidbody2D;
@@ -107,5 +109,12 @@ public class PlayerController : MonoBehaviour, IHitable
     public void Die() {
         transform.Rotate(Vector3.forward * 20f * Time.deltaTime);
         _isDie = true;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "Eye") { isPuzzle[0] = true; Destroy(collision); }
+        else if (collision.tag == "beak") isPuzzle[1] = true;
+        else if (collision.tag == "comb") isPuzzle[2] = true;
     }
 }
