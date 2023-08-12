@@ -1,10 +1,5 @@
 using PlayerState;
-using System;
-using System.Runtime.CompilerServices;
-using TMPro.EditorUtilities;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerController : MonoBehaviour, IHitable
 {
@@ -227,7 +222,7 @@ namespace PlayerState
         }
         private void CheckGround()
         {
-            if (_player.rb2D.velocity.y > 1f)
+            if (_player.rb2D.velocity.y > 3f)
             {
                 _isGrounded = false;
                 return;
@@ -306,7 +301,7 @@ namespace PlayerState
         {
             _stunTime = 0.5f;
             _flickerTime = 0.1f;
-            // ³Ë¹é
+            // ï¿½Ë¹ï¿½
             //float sign = _player.rb2D.velocity.x > 0 ? -1 : 1;
             //_player.rb2D.AddForce(new Vector2( 150f * sign, 100f));
         }
