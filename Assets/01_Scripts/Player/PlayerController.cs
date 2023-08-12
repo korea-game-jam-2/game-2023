@@ -1,6 +1,7 @@
 using PlayerState;
 using System;
 using System.Runtime.CompilerServices;
+using TMPro.EditorUtilities;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -22,7 +23,6 @@ public class PlayerController : MonoBehaviour, IHitable
     public GameObject hitEffect;
 
 
-    private bool _isDie = false;
     private bool isPause = false;
 
     private StateMachine<PlayerController> _machine;
@@ -34,8 +34,6 @@ public class PlayerController : MonoBehaviour, IHitable
         _machine.AddState(new DieState(), this);
 
         uiManager = FindObjectOfType<UiManager>();
-
-        
     }
 
     void Update()
@@ -82,6 +80,16 @@ public class PlayerController : MonoBehaviour, IHitable
             _machine.ChangeState<DieState>();
         }
     }
+<<<<<<< HEAD
+<<<<<<< HEAD
+    public void ResetState() {
+        hp = 3;
+        _machine.ChangeState<MovableState>();
+    }
+=======
+>>>>>>> dafa4f3 (물약 구현)
+=======
+>>>>>>> dafa4f3 (물약 구현)
     
     void OnTriggerEnter2D(Collider2D other)
     {
