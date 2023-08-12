@@ -231,7 +231,8 @@
 
 			// Ambient Lighting / Light Probes, per-vertex if no normal map
 	#if defined(LIGHTING_INDIRECT) && !_NORMALMAP
-			half3 shColor = ShadeSHPerVertex(v.normal.xyz, half3(0,0,0));
+			half3 shColor = ShadeS
+erVertex(v.normal.xyz, half3(0,0,0));
 			o.shColor = shColor;
 	#endif
 

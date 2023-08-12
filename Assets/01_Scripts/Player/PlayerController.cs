@@ -80,16 +80,12 @@ public class PlayerController : MonoBehaviour, IHitable
             _machine.ChangeState<DieState>();
         }
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
+
     public void ResetState() {
         hp = 3;
         _machine.ChangeState<MovableState>();
     }
-=======
->>>>>>> dafa4f3 (물약 구현)
-=======
->>>>>>> dafa4f3 (물약 구현)
+
     
     void OnTriggerEnter2D(Collider2D other)
     {
