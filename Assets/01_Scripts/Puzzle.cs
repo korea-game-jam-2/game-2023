@@ -7,7 +7,6 @@ public class Puzzle : MonoBehaviour
     public bool[] isPuzzle = new bool[3];
 
     public GameObject[] onPuzzle;
-
     public GameObject exlplonsion;
     // Update is called once per frame
     void Update()
@@ -44,6 +43,5 @@ public class Puzzle : MonoBehaviour
                 onPuzzle[2].SetActive(true);
             }
         }
-
     }
 }

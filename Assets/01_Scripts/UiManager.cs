@@ -7,21 +7,15 @@ public class UiManager : MonoBehaviour
     
     public GameObject[] health;
     public GameObject[] emptyHealth;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void HealthDown(int hp)
     {
         health[hp].SetActive(false);
         emptyHealth[hp].SetActive(true);
+    }
+    public void HealthUp(int hp)
+    {
+        health[hp].SetActive(true);
+        emptyHealth[hp].SetActive(false);
     }
 }
