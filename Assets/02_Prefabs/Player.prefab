@@ -12,9 +12,10 @@ GameObject:
   - component: {fileID: 6438830575427457884}
   - component: {fileID: 51926265338582755}
   - component: {fileID: 209774652761057695}
+  - component: {fileID: 6351147978420703863}
   m_Layer: 7
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -59,6 +60,8 @@ MonoBehaviour:
   spriteRenderer: {fileID: 843693788371064957}
   animator: {fileID: 3063326585053445989}
   rb2D: {fileID: 51926265338582755}
+  pauseMenu: {fileID: 0}
+  hitEffect: {fileID: 4021103657954561961, guid: 5c755f9bc5253ea418e919994537dcc7, type: 3}
 --- !u!50 &51926265338582755
 Rigidbody2D:
   serializedVersion: 4
@@ -121,6 +124,27 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 1.5}
   m_Size: {x: 1.5, y: 3}
   m_Direction: 0
+--- !u!95 &6351147978420703863
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4261453478551941253}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &8070141881240704024
 GameObject:
   m_ObjectHideFlags: 0

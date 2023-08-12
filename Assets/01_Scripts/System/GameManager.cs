@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public List<SavePoint> savePoints;
     public PlayerController playerController;
     public List<PlayableDirector> stageTransition;
+    public bool skipCinematic = false;
 
     private SavePoint _currentSavePoint;
 
@@ -48,6 +49,8 @@ public class GameManager : MonoBehaviour
         playerController.transform.position = _currentSavePoint.transform.position;
     }
     public void ShowCinematic(int index) {
+        if (skipCinematic) return;
+
         playerController.SetFreeze(true);
 
         stageTransition[index].stopped += (_)=>playerController.SetFreeze(false);
