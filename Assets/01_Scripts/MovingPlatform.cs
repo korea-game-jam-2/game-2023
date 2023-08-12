@@ -12,4 +12,18 @@ public class MovingPlatform : MonoBehaviour
         anim = GetComponent<Animator>();
         anim.SetBool("isMirror", isMirror);
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player")) {
+            collision.transform.SetParent(transform);
+        }
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
+        {
+            collision.transform.SetParent(null);
+        }
+    }
 }
