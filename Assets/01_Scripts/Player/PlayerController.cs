@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour, IHitable
     public int hp = 3;
     public float moveSpeed = 2f;
     public float jumpForce = 5f;
+    public float invincibleTime = 1f;
+
     public Transform groundCheck = null;
     public LayerMask groundLayer;
 
@@ -33,7 +35,11 @@ public class PlayerController : MonoBehaviour, IHitable
     void Update()
     {
         CollisionCheck();
-        KeyboardHandler();
+
+        if (!_isDie)
+        {
+            KeyboardHandler();
+        }
 
         animator.SetBool("isJump", !_isGrounded);
 
@@ -102,7 +108,6 @@ public class PlayerController : MonoBehaviour, IHitable
         Debug.Log(hp);
         hp -= damage;
 
-        _rigidbody2D.AddForce(_isLeftView ? new Vector2(1f,1f) * 500f: new Vector2(1f, 1f) * -500f);
 
         if (hp <= 0) {
             Die();
