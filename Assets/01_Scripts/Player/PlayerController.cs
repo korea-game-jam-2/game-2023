@@ -81,10 +81,13 @@ public class PlayerController : MonoBehaviour, IHitable
         }
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
     public void ResetState() {
         hp = 3;
         _machine.ChangeState<MovableState>();
     }
+=======
+>>>>>>> dafa4f3 (물약 구현)
 =======
 >>>>>>> dafa4f3 (물약 구현)
     
