@@ -1,6 +1,5 @@
 using PlayerState;
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour, IHitable
@@ -13,11 +12,11 @@ public class PlayerController : MonoBehaviour, IHitable
     public Transform groundCheck = null;
     public LayerMask groundLayer;
 
+    public LayerMask monsterHitboxLayer;
+
     public SpriteRenderer spriteRenderer = null;
     public Animator animator = null;
     public Rigidbody2D rb2D = null;
-   
-    private bool _isDie = false;
 
     private StateMachine<PlayerController> _machine;
 
@@ -25,8 +24,6 @@ public class PlayerController : MonoBehaviour, IHitable
     {
         _machine = new StateMachine<PlayerController>(new MovableState(), this);
         _machine.AddState(new DieState(), this);
-
-        
     }
 
     void Update()
@@ -37,15 +34,24 @@ public class PlayerController : MonoBehaviour, IHitable
     {
         hp -= damage;
 
-
         if (hp <= 0) {
             _machine.ChangeState<DieState>();
         }
     }
-
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (1 << collision.gameObject.layer == monsterHitboxLayer)
+        {
+            IHitable hitable = collision.GetComponentInParent<IHitable>();
+            if (hitable != null) {
+                hitable.Hit(1);
+                rb2D.velocity = new Vector2(rb2D.velocity.x, jumpForce);
+            }
+        }
+    }
 }
 
-namespace PlayerState {
+namespace PlayerState{
     public class MovableState : IState<PlayerController>
     {
         private PlayerController _player;
@@ -82,7 +88,7 @@ namespace PlayerState {
             }
         }
 
-        private void ObstacleCheck()
+        private  void ObstacleCheck()
         {
             Vector3 origin = _player.transform.position;
             Vector3 rayDistance = _player.transform.right * 0.1f;
@@ -95,7 +101,7 @@ namespace PlayerState {
                 {
                     _player.rb2D.velocity = new Vector2(Mathf.Min(_player.rb2D.velocity.x, 0), _player.rb2D.velocity.y);
 
-                    Debug.DrawLine(origin, origin + rayDistance, Color.green);
+                    Debug.DrawLine(origin, origin + rayDistance,  Color.green);
                 }
                 else if (leftHit)
                 {
@@ -142,8 +148,7 @@ namespace PlayerState {
         }
         private void CheckGround()
         {
-            if (_player.rb2D.velocity.y > 1f)
-            {
+            if (_player.rb2D.velocity.y > 1f) {
                 _isGrounded = false;
                 return;
             }
@@ -159,10 +164,10 @@ namespace PlayerState {
                 _isGrounded = false;
             }
 
+            
         }
-        
     }
-}
+    
     public class DieState : IState<PlayerController>
     {
         private PlayerController _player;
@@ -185,3 +190,4 @@ namespace PlayerState {
             _player = context;
         }
     }
+}
