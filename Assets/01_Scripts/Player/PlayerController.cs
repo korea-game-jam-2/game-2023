@@ -223,7 +223,7 @@ namespace PlayerState
         }
         private void CheckGround()
         {
-            if (_player.rb2D.velocity.y > 1f)
+            if (_player.rb2D.velocity.y > 3f)
             {
                 _isGrounded = false;
                 return;
