@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour, IHitable
     public SpriteRenderer spriteRenderer = null;
     public Animator animator = null;
     public Rigidbody2D rb2D = null;
-    
+
     public GameObject pauseMenu;
     public GameObject hitEffect;
 
@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour, IHitable
             if (isPause)
             {
                 Pause();
-                
+
             }
             else
             {
@@ -67,45 +67,30 @@ public class PlayerController : MonoBehaviour, IHitable
         Time.timeScale = 0f;
         isPause = false;
     }
-        public void Hit(int damage)
+    public void Hit(int damage)
     {
         hp -= damage;
         if (hp >= 0)
         {
-            Instantiate(hitEffect,transform.position, Quaternion.identity);
+            Instantiate(hitEffect, transform.position, Quaternion.identity);
             uiManager.HealthDown(hp);
         }
 
-        if (hp <= 0) {
+        if (hp <= 0)
+        {
             _machine.ChangeState<DieState>();
         }
     }
-
-    public void ResetState() {
+    public void ResetState()
+    {
         hp = 3;
         _machine.ChangeState<MovableState>();
     }
 
-    
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        Debug.Log("IN");
-        if (other.tag == "Gourd")
-        {
-            Debug.Log("IN");
-            Destroy(other.gameObject);
-            if (hp < 3)
-            {
-                uiManager.HealthUp(hp);
-                hp++;
-            }
-        }
-    }
-
-
 }
 
-namespace PlayerState {
+namespace PlayerState
+{
     public class MovableState : IState<PlayerController>
     {
         private PlayerController _player;
@@ -117,7 +102,6 @@ namespace PlayerState {
 
         public void Enter()
         {
-            throw new NotImplementedException();
         }
 
         public void Execute()
@@ -146,9 +130,16 @@ namespace PlayerState {
         {
             Vector3 origin = _player.transform.position;
             Vector3 rayDistance = _player.transform.right * 0.1f;
+            Vector3 headPosition = new Vector2(0, 0.5f);
             bool rightHit = Physics2D.Linecast(origin, origin + rayDistance, _player.groundLayer);
+            if(!rightHit) {
+                
+                rightHit = Physics2D.Linecast(origin, origin + rayDistance + headPosition, _player.groundLayer);
+            }
             bool leftHit = Physics2D.Linecast(origin, origin - rayDistance, _player.groundLayer);
-
+            if (!leftHit) {
+                leftHit = Physics2D.Linecast(origin, origin - rayDistance + headPosition, _player.groundLayer);
+            }
             if (!_isGrounded)
             {
                 if (rightHit)
@@ -220,28 +211,35 @@ namespace PlayerState {
             }
 
         }
-        
+
     }
 }
-    public class DieState : IState<PlayerController>
+public class DieState : IState<PlayerController>
+{
+    private PlayerController _player;
+
+    private float _respawnCoolTime = 3f;
+    public void Enter()
     {
-        private PlayerController _player;
+        _player.animator.SetBool("isDie", true);
+        _respawnCoolTime = 3f;
+    }
 
-        public void Enter()
-        {
-            _player.animator.SetTrigger("isDie");
-        }
-
-        public void Execute()
-        {
-        }
-
-        public void Exit()
-        {
-        }
-
-        public void Initialize(PlayerController context)
-        {
-            _player = context;
+    public void Execute()
+    {
+        _respawnCoolTime -= Time.deltaTime;
+        if (_respawnCoolTime < 0) {
+            GameManager.Instance.Respawn();
         }
     }
+
+    public void Exit()
+    {
+        _player.animator.SetBool("isDie", false);
+    }
+
+    public void Initialize(PlayerController context)
+    {
+        _player = context;
+    }
+}
