@@ -25,7 +25,6 @@ public class Puzzle : MonoBehaviour
     {
         
         if (collision.tag == "Player") {
-            pieceUi.SetActive(true);
             Instantiate(exlplonsion, transform.position, Quaternion.identity);
             if (gameObject.tag == "Eye")
             {
@@ -45,6 +44,8 @@ public class Puzzle : MonoBehaviour
                 isPuzzle[2] = true;
                 onPuzzle[2].SetActive(true);
             }
+
+            pieceUi.SetActive(true);
         }
     }
 }

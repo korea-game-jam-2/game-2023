@@ -6,8 +6,13 @@ using UnityEngine;
 public class StateMachine<T> where T : class
 {
     private List<IState<T>> _states = new List<IState<T>>();
+
+    public IState<T> CurrentState { get => _currentState; }
+
     private IState<T> _currentState;
     private IState<T> _prevState;
+
+    
     public StateMachine(IState<T> initState, T context)
     {
         initState.Initialize(context);
