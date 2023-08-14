@@ -68,12 +68,6 @@ public class GameManager : MonoBehaviour
     {
         Application.Quit();
     }
-    public void GameStop()
-    {
-        Application.Quit();
-    }
-    public void GameStop()
-    {
-        Application.Quit();
-    }
+    
+    
 }
